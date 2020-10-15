@@ -1,14 +1,18 @@
 package gri.riverjach.lepetitbillard
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
+
+    lateinit var drawingView: DrawingView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        drawingView = findViewById(R.id.vMain)
     }
 
     fun onClick(v: View) {
