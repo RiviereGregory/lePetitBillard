@@ -13,6 +13,8 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         drawingView = findViewById(R.id.vMain)
+        drawingView.setWillNotDraw(false)
+        drawingView.invalidate()
     }
 
     fun onClick(v: View) {
