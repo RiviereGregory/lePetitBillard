@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">lePetitBillard</string>
+    <string name="change_couleur">CHANGE COULEUR</string>
 </resources>

@@ -31,4 +31,10 @@ class DrawingView @JvmOverloads constructor(
         balle2.draw(canvas)
         balle3.draw(canvas)
     }
+
+    fun changeCouleur(){
+        balle1.changeCouleur()
+        balle2.changeCouleur()
+        balle3.changeCouleur()
+    }
 }

@@ -18,8 +18,8 @@ class MainActivity : Activity() {
     }
 
     fun onClick(v: View) {
-        val x = 10
-        if (x >= 10)
-            Toast.makeText(this, "Je presse mon premier bouton", Toast.LENGTH_LONG).show()
+        drawingView.changeCouleur()
+        drawingView.invalidate()
+        Toast.makeText(this, "Couleur changé", Toast.LENGTH_SHORT).show()
     }
 }
