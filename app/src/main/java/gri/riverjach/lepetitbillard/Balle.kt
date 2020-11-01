@@ -30,13 +30,36 @@ class Balle(x1: Float, y1: Float, val diametre: Float) {
         color = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256))
     }
 
-    fun bouge(canvas: Canvas) {
-        if (r.left < 0) dx = -dx
-        if (r.right > 750) dx = -dx
-        if (r.top < 0) dy = -dy
-        if (r.bottom > 1100) dy = -dy
+    fun bouge(lesParois: Array<Parois>, lesBalles: ArrayList<Balle>) {
         r.offset(5.0F * dx, 5.0F * dy)
-        draw(canvas)
+        for (parois in lesParois) {
+            parois.gereBalle(this)
+        }
+
+        for (balle in lesBalles) {
+            if (this !== balle && RectF.intersects(r, balle.r)) {
+                balle.rebondit()
+                balle.changeCouleur()
+                rebondit()
+                changeCouleur()
+                break
+            }
+        }
+    }
+
+    private fun rebondit() {
+        dx = -dx
+        dy = -dy
+        r.offset(3.0F * dx, 3.0F * dy)
+    }
+
+    fun changeDirection(x: Boolean) {
+        if (x) {
+            this.dy = -dy
+        } else {
+            this.dx = -dx
+        }
+        r.offset(3.0F * dx, 3.0F * dy)
     }
 
 }

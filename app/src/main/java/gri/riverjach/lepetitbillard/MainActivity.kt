@@ -3,7 +3,6 @@ package gri.riverjach.lepetitbillard
 import android.app.Activity
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 
 class MainActivity : Activity() {
 
@@ -13,8 +12,6 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         drawingView = findViewById(R.id.vMain)
-        drawingView.setWillNotDraw(false)
-        drawingView.invalidate()
     }
 
     override fun onResume() {
@@ -28,8 +25,10 @@ class MainActivity : Activity() {
     }
 
     fun onClick(v: View) {
-        drawingView.changeCouleur()
-        drawingView.invalidate()
-        Toast.makeText(this, "Couleur changé", Toast.LENGTH_SHORT).show()
+        if (drawingView.drawing) {
+            drawingView.pause()
+        } else {
+            drawingView.resume()
+        }
     }
 }

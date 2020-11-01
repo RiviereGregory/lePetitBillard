@@ -5,37 +5,44 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.view.MotionEvent
+import android.view.SurfaceHolder
 import android.view.SurfaceView
-import java.util.*
 
 class DrawingView @JvmOverloads constructor(
     context: Context,
     attributes: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : SurfaceView(context, attributes, defStyleAttr), Runnable {
+) : SurfaceView(context, attributes, defStyleAttr), SurfaceHolder.Callback, Runnable {
 
+    lateinit var canvas: Canvas
     val backgroundPaint = Paint()
-    val random = Random()
-    val balle1 =
-        Balle(random.nextFloat() * 500, random.nextFloat() * 1000, random.nextFloat() * 500)
-    val balle2 =
-        Balle(random.nextFloat() * 500, random.nextFloat() * 1000, random.nextFloat() * 500)
-    val balle3 =
-        Balle(random.nextFloat() * 500, random.nextFloat() * 1000, random.nextFloat() * 500)
-
     lateinit var thread: Thread
     var drawing = true
-    lateinit var canvas: Canvas
+    val lesBalles = ArrayList<Balle>()
+    lateinit var lesParois: Array<Parois>
 
-    fun changeCouleur() {
-        balle1.changeCouleur()
-        balle2.changeCouleur()
-        balle3.changeCouleur()
+    init {
+        backgroundPaint.color = Color.WHITE
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        val canvasH = (h - 500).toFloat()
+        val canvasW = (w - 25).toFloat()
+        lesParois = arrayOf(
+            Parois(5f, 5f, 25f, canvasH),
+            Parois(5f, 5f, canvasW, 25f),
+            Parois(5f, canvasH, canvasW, canvasH + 25f),
+            Parois(canvasW, 5f, canvasW + 25f, canvasH + 25f)
+        )
+    }
 
     override fun run() {
         while (drawing) {
+            for (balle in lesBalles) {
+                balle.bouge(lesParois, lesBalles)
+            }
             draw()
         }
     }
@@ -43,11 +50,29 @@ class DrawingView @JvmOverloads constructor(
     private fun draw() {
         if (holder.surface.isValid) {
             canvas = holder.lockCanvas()
-            backgroundPaint.color = Color.WHITE
             canvas.drawRect(0F, 0F, canvas.width * 1F, canvas.height * 1F, backgroundPaint)
-            balle1.bouge(canvas)
+            for (balle in lesBalles) {
+                balle.draw(canvas)
+            }
+
+            for (parois in lesParois) {
+                parois.draw(canvas)
+            }
             holder.unlockCanvasAndPost(canvas)
         }
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                val x = event.rawX.toInt() - 100
+                val y = event.rawY.toInt() - 300
+                if (lesBalles.size < 15) {
+                    lesBalles.add(Balle(x.toFloat(), y.toFloat(), 30f))
+                }
+            }
+        }
+        return true
     }
 
     fun resume() {
@@ -58,6 +83,19 @@ class DrawingView @JvmOverloads constructor(
 
     fun pause() {
         drawing = false
+        thread.join()
+    }
+
+    override fun surfaceCreated(p0: SurfaceHolder?) {
+        thread = Thread(this)
+        thread.start()
+    }
+
+    override fun surfaceChanged(p0: SurfaceHolder?, p1: Int, p2: Int, p3: Int) {
+        // Ne fait rien
+    }
+
+    override fun surfaceDestroyed(p0: SurfaceHolder?) {
         thread.join()
     }
 }
